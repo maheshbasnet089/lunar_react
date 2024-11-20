@@ -1,7 +1,33 @@
+import { useEffect, useState } from "react"
 import Navbar from "../components/Navbar"
+import axios from "axios"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
 
 function Single(){
+    const {id} = useParams()
+    const [blog,setBlog] = useState({})
+const navigate =     useNavigate()
+    console.log(id)
+    const fetchSingleBlog = async ()=>{
+        const response = await axios.get("http://localhost:3000/blog/" + id)
+        if(response.status === 200){
+            setBlog(response.data.data)
+        }else{
+            console.log("something went wrong")
+        }
+    }
+    useEffect(()=>{
+        fetchSingleBlog()
+    },[])
+    const deleteBlog = async ()=>{
+        const response = await axios.delete("http://localhost:3000/blog/" + id)
+        if(response.status == 200){
+            navigate("/")
+        }else{
+            alert("something went wrong")
+        }
+    }
     return (
        <>
        <Navbar />
@@ -14,18 +40,23 @@ function Single(){
                 </div>
                 <div className="flex -mx-2 mb-4">
                     <div className="w-1/2 px-2">
-                        <button className="w-full bg-gray-900 dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">Add to Cart</button>
+                       <Link to={`/edit/${id}`}>
+                       <button className="w-full bg-gray-900 dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">Edit</button>
+                       </Link>
                     </div>
                     <div className="w-1/2 px-2">
-                        <button className="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">Add to Wishlist</button>
+                      
+                       <button onClick={deleteBlog} className="w-full bg-gray-900 dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">Delete</button>
+                       
                     </div>
+   
+   
                 </div>
             </div>
             <div className="md:flex-1 px-4">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Product Name</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{blog.title}</h2>
                 <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed
-                    ante justo. Integer euismod libero id mauris malesuada tincidunt.
+                    {blog.description}
                 </p>
                 <div className="flex mb-4">
                     <div className="mr-4">
